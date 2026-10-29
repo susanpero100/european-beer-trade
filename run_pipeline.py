@@ -15,7 +15,7 @@ STEPS = [
 
 def main() -> None:
     for step in STEPS:
-        script = ROOT / "src" / "beer_trade" / step
+        script = ROOT / "src" / "european_beer_trade" / step
 
         print(f"\nRunning: {step}", flush=True)
 
@@ -30,5 +30,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-    

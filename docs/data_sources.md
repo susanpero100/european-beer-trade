@@ -39,7 +39,9 @@
 
 **Main limitation:** Partner data consists of three aggregate categories. It does not identify individual destination countries or bilateral trade relationships.
 
-**Reuse conditions:** Verify the applicable Eurostat reuse policy and attribution requirements before publication.
+**Reuse conditions:** Eurostat data may generally be reused free of charge with appropriate source attribution and indication of any modifications, subject to dataset-specific restrictions. Source: https://ec.europa.eu/eurostat/about-us/communicating-disseminating-statistics
+
+**Attribution:** Source: Eurostat, International Trade in Goods, dataset DS-059341. Data filtered, reshaped and analysed by the project authors.
 
 ## 2. World Bank — World Development Indicators
 
@@ -58,7 +60,7 @@
 - Years: 2019–2025.
 - Response format: JSON.
 
-**Collection procedure:** The script `src/beer_trade/collect_worldbank.py` requests the data through the World Bank API, handles pagination, retries failed requests and validates country-year coverage.
+**Collection procedure:** The script `src/european_beer_trade/collect_worldbank.py` requests the data through the World Bank API, handles pagination, retries failed requests and validates country-year coverage.
 
 **Pagination:** Four pages per indicator using `per_page=50`.
 
@@ -72,7 +74,9 @@
 
 **Data extraction date:** Recorded automatically in each JSON snapshot using `extracted_at`.
 
-**Reuse conditions:** Verify the World Bank data license and any dataset-specific attribution requirements before publication.
+**Reuse conditions:** World Development Indicators is licensed under Creative Commons Attribution 4.0 (CC BY 4.0). Reuse requires attribution and indication of changes, subject to applicable dataset-specific conditions. Source: https://datacatalog.worldbank.org/search/dataset/0037712/world-development-indicators
+
+**Attribution:** Source: World Bank, World Development Indicators (SP.POP.TOTL and NY.GDP.PCAP.CD). Data collected through the API and transformed by the project authors.
 
 ## 3. Data Integration
 
@@ -112,7 +116,7 @@ Rebuild the prepared datasets, integrated data, KPIs and Python figures using:
 
 Refresh World Bank raw snapshots using:
 
-`uv run python src/beer_trade/collect_worldbank.py`
+`uv run python src/european_beer_trade/collect_worldbank.py`
 
 The main pipeline rebuilds outputs from stored raw files without requiring an internet connection.
 
