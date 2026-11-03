@@ -177,7 +177,7 @@ The Eurostat source is currently provided as a manually downloaded raw CSV. Its 
 
 ## Code Quality and Testing
 
-Run the three automated business-logic tests:
+Run the seven automated business-logic tests:
 
 ```bash
 uv run pytest -q
@@ -203,7 +203,7 @@ uv run mypy
 
 Ruff checks the pipeline source code, tests and entrypoint. Mypy checks the Python package under `src/european_beer_trade`, as configured in `pyproject.toml`.
 
-The automated tests cover duplicate-key detection, join integrity and export-share calculations.
+The automated tests cover duplicate-key detection, join integrity (including rejection of unmatched country-year records), export-share calculations, trade balance, per-capita exports, export unit value, undefined first-year growth and zero-export edge cases. Run them from the project root after `uv sync`.
 
 ## Main Findings
 
@@ -267,9 +267,12 @@ Main planned visualizations include:
 2. Country-level export share changes.
 3. Intra-EU versus extra-EU export patterns.
 
-The packaged Tableau workbook (`.twbx`) will be stored in `tableau/` once completed.
 
-To refresh the dashboard, rerun the Python pipeline and refresh the corresponding CSV data sources in Tableau. Calculated fields and dashboard filters affecting the analysis will be documented when the workbook is finalized.
+The packaged workbook is stored in `tableau/European_Beer_Trade_Dashboard.twbx`. It uses two processed CSV outputs of the pipeline: `beer_trade_kpis.csv` and `beer_trade_integrated.csv`.
+
+See [`docs/tableau_guide.md`](docs/tableau_guide.md) for the calculated fields, the filters applied, and the steps to open or refresh the dashboard.
+
+To refresh the dashboard, rerun the Python pipeline (`uv run python run_pipeline.py`), then refresh the CSV data sources in Tableau.
 
 ## Data Quality and Limitations
 
