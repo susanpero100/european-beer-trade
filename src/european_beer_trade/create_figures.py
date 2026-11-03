@@ -87,6 +87,55 @@ def create_figures() -> None:
     fig.savefig(FIGURES / "03_geographic_growth.png", dpi=200)
     plt.close(fig)
 
+    # Figure 4: Top 10 exporters per capita in 2025
+    per_capita_2025 = (
+        kpis[kpis["year"] == 2025][["country", "exports_per_capita_kg"]]
+        .sort_values("exports_per_capita_kg", ascending=False)
+        .head(10)
+        .sort_values("exports_per_capita_kg")
+    )
+
+    fig, ax = plt.subplots(figsize=(9, 6))
+    ax.barh(
+        per_capita_2025["country"].to_list(),
+        per_capita_2025["exports_per_capita_kg"].to_list(),
+    )
+    ax.set_title("Top 10 EU Beer Exporters per Capita, 2025")
+    ax.set_xlabel("kg per person")
+    ax.set_ylabel("Country")
+    ax.grid(axis="x", alpha=0.25)
+
+    for i, value in enumerate(per_capita_2025["exports_per_capita_kg"].to_list()):
+        ax.text(value + 1, i, f"{value:.2f}", va="center")
+
+    fig.tight_layout()
+    fig.savefig(FIGURES / "04_exports_per_capita_2025.png", dpi=200)
+    plt.close(fig)
+    # Figure 4: Beer exports per capita in 2025
+    per_capita = (
+        kpis.loc[kpis["year"] == 2025, ["country", "exports_per_capita_kg"]]
+        .dropna()
+        .nlargest(10, "exports_per_capita_kg")
+        .sort_values("exports_per_capita_kg")
+    )
+
+    fig, ax = plt.subplots(figsize=(9, 6))
+    ax.barh(
+        per_capita["country"].to_list(),
+        per_capita["exports_per_capita_kg"].to_list(),
+    )
+    ax.set_title("Top 10 EU Beer Exporters per Capita, 2025")
+    ax.set_xlabel("Beer exports (kg per resident)")
+    ax.set_ylabel("Country")
+    ax.grid(axis="x", alpha=0.25)
+
+    for i, value in enumerate(per_capita["exports_per_capita_kg"]):
+        ax.text(value + 1, i, f"{value:.2f}", va="center")
+
+    fig.tight_layout()
+    fig.savefig(FIGURES / "04_exports_per_capita_2025.png", dpi=200)
+    plt.close(fig)
+
     print("Figures created successfully:")
     for path in sorted(FIGURES.glob("*.png")):
         print(path.name)
