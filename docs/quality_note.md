@@ -36,5 +36,7 @@ Using 2024 instead of 2025 preserves the positive export-share changes for Irela
 - **Finality of 2025 data:** Recent observations may be revised.
 - **Underlying source accuracy:** Passing validation checks does not independently verify official statistics.
 
+**Automated checks:** the cleaning, integration and KPI logic is covered by `tests/test_pipeline.py` (run `uv run pytest -q`).
 **Assessment:** Suitable for descriptive EU-27 beer trade comparisons, but not for causal inference or destination-level investment decisions.
+
 
