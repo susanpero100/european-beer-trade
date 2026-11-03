@@ -1,15 +1,9 @@
-import sys
-from pathlib import Path
-
 import pandas as pd
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "src" / "beer_trade"))
-
-from calculate_kpis import calculate_kpis
-from integrate_data import integrate_data
-from prepare_eurostat import prepare_data
+from european_beer_trade.calculate_kpis import calculate_kpis
+from european_beer_trade.integrate_data import integrate_data
+from european_beer_trade.prepare_eurostat import prepare_data
 
 
 def test_eurostat_rejects_duplicate_observations():

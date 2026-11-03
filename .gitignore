@@ -28,3 +28,6 @@ wheels/
 data/raw/comtrade/
 data/raw/comtrade_italy_2024.json
 
+
+# Tableau temporary files
+*.twbr
