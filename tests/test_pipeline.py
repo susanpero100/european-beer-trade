@@ -81,3 +81,87 @@ def test_export_shares_sum_to_100():
     austria_share = result.loc[result["country"] == "AT", "export_share_pct"].iloc[0]
 
     assert austria_share == pytest.approx(25.0)
+
+
+def _trade_rows(
+    country,
+    year,
+    export_kg,
+    import_kg=50.0,
+    export_eur=200.0,
+    import_eur=80.0,
+    population=1_000_000,
+):
+    """Build one EXPORT row and one IMPORT row for a country-year."""
+    base = {
+        "country": country,
+        "year": year,
+        "partner": "WORLD",
+        "population": population,
+        "gdp_per_capita_usd": 50_000.0,
+    }
+    return [
+        {**base, "flow": "EXPORT", "quantity_kg": export_kg, "value_eur": export_eur},
+        {**base, "flow": "IMPORT", "quantity_kg": import_kg, "value_eur": import_eur},
+    ]
+
+
+def test_trade_balance_and_per_capita_kpis():
+    """Trade balance and per-capita exports are computed correctly."""
+    df = pd.DataFrame(_trade_rows("AT", 2024, export_kg=100.0))
+
+    result = calculate_kpis(df)
+    row = result.iloc[0]
+
+    assert row["trade_balance_kg"] == pytest.approx(50.0)
+    assert row["trade_balance_eur"] == pytest.approx(120.0)
+    assert row["exports_per_capita_kg"] == pytest.approx(0.0001)
+    assert row["export_unit_value_eur_per_kg"] == pytest.approx(2.0)
+
+
+def test_export_growth_is_undefined_for_first_year():
+    """Growth is NaN in the first year and correct afterwards."""
+    rows = _trade_rows("AT", 2023, export_kg=100.0) + _trade_rows(
+        "AT", 2024, export_kg=150.0
+    )
+
+    result = calculate_kpis(pd.DataFrame(rows))
+
+    assert pd.isna(result.loc[result["year"] == 2023, "export_growth_pct"].iloc[0])
+    assert result.loc[result["year"] == 2024, "export_growth_pct"].iloc[0] == (
+        pytest.approx(50.0)
+    )
+
+
+def test_zero_exports_give_undefined_unit_value():
+    """Zero exported quantity must give NaN, not infinity or an error."""
+    df = pd.DataFrame(_trade_rows("AT", 2024, export_kg=0.0, export_eur=0.0))
+
+    result = calculate_kpis(df)
+
+    assert pd.isna(result["export_unit_value_eur_per_kg"].iloc[0])
+
+
+def test_integration_rejects_unmatched_country_year():
+    """A trade row with no World Bank match must stop the pipeline."""
+    beer = pd.DataFrame(
+        {
+            "country": ["AT", "BE"],
+            "year": [2024, 2024],
+            "partner": ["WORLD", "WORLD"],
+            "flow": ["EXPORT", "EXPORT"],
+            "quantity_kg": [100.0, 200.0],
+            "value_eur": [200.0, 400.0],
+        }
+    )
+    worldbank = pd.DataFrame(
+        {
+            "country": ["AT"],
+            "year": [2024],
+            "population": [9_000_000],
+            "gdp_per_capita_usd": [50_000.0],
+        }
+    )
+
+    with pytest.raises(ValueError, match="Unmatched"):
+        integrate_data(beer, worldbank)
